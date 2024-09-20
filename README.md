@@ -1,38 +1,93 @@
-## Automatisierte Erstellung von Jahresberichten
-**Mit diesem Programm kann der Finanzverwalter in wenigen Sekunden einen Jahresbericht erstellen.**
+# Donation Report Generator
 
-### Wie richtet man das Programm auf dem eigenen Computer ein?
+This Python project generates a detailed Excel report of monthly donation transactions. The program processes a CSV file containing transaction details, filters incoming payments, and produces an Excel file summarizing the data for each month in both German and Serbian Cyrillic. It also generates a summary sheet with total monthly incomes.
 
-Wenn du bereits die **create_monthly_report.py** Datei besitzt, kannst du diesen Schritt überspringen.
+## Features
 
-#### Kopiere dieses GitHub Repository auf deinen Computer
-Die einfachste Methode ist, das Repository als ZIP-Datei herunterzuladen. So kannst du es machen:
-![downloadZip.png](downloadZip.png)
-Wenn du bereits eine gültige Git-Installation auf deinem Computer hast, kannst du den folgenden Befehl verwenden:
+- **Language support**: Handles German and Serbian Cyrillic.
+- **Currency formatting**: Converts localized currency formats (e.g., `1.234,56 €`) into numeric values.
+- **Excel report generation**: Automatically generates an Excel file with detailed donation data, including names, amounts, purposes, and countries.
+- **Automated initials and name respelling**: Converts specific letter patterns (e.g., `ic` to `ić`) and extracts initials for donor names.
+- **Monthly summaries**: Compiles and formats summaries for each month and a total income report.
 
-``` cmd
-git clone https://github.com/MircetaLuka/monatsbericht-automatisierung.git
+## Prerequisites
+
+Before running the script, ensure you have the following installed:
+
+- Python 3.x
+- Pandas
+- Openpyxl
+
+To install the necessary dependencies, run:
+
+```bash
+pip install pandas openpyxl
+````
+
+## File Structure
+
+- kontobericht{year}.csv: The input CSV file that contains the raw bank transaction data. The file should be named with the specific year, e.g., kontobericht2022.csv.
+
+- Izvestaji/Donatori - Spender {year}.xlsx: The output Excel file, generated after processing the CSV data.
+
+## Script Details
+
+### Functions 
+
+1. respell_serbian_name(name):
+    - Corrects and replaces characters in Serbian names (like replacing 'ic' with 'ić' and 'dj' with 'đ').
+
+2. extract_initials(name):
+    - Extracts the initials from donor names, used to anonymize personal information in the report.
+
+3. map_country(code):
+    - Maps country codes (e.g., 'AT' for Austria, 'DE' for Germany) to full country names. If a code is missing, it defaults to 'Austria'.
+
+4. convert_month_to_serbian_cyrillic(month_name):
+    - Converts month names from German to Serbian Cyrillic.
+
+5. delocalize(string):
+    - Converts localized German number strings to floats, handling both commas and periods correctly.
+
+## Workflow 
+
+1. *Preparing and Preprocessing Data:*
+    The script reads the input CSV file using pandas, renames columns to fit the required format, and filters the transactions where the amount (Betrag) is positive, i.e., only donations are included.
+
+2. *Summing Donations by Month:*
+    For each month, the script calculates the total donations and formats the data into a human-readable table. The sum for each month is written to a DataFrame called gesamt_daten, which later gets exported into the "GESAMT" sheet of the Excel file.
+
+3. *Writing to Excel:*
+    The script uses the *openpyxl* library to write data into multiple sheets, one for each month, in both Serbian and German. It adds titles, borders, formatted currency, and merges cells for a clean, professional look.
+
+4. *Styling:*
+    The script formats cells with specific fonts, fills, and alignments. It ensures that titles are bold and centered, borders are applied to all cells, and the currency values are aligned to the right with proper formatting.
+
+
+## Output Excel File Structure
+- *Monthly Sheets*
+    Each month (e.g., Januar, Februar) has a corresponding sheet that contains the donation data for that month, formatted in both Serbian Cyrillic and German.
+
+    *Headers* 
+    - Име / Name (Name of the donor)
+    - Земља / Land (Country)
+    - Износ / Betrag (Amount)
+    - Сврха / Zweck (Purpose)
+
+    The sum of donations for each month is displayed at the bottom of each sheet.
+
+- *GESAMT {year} Sheet:*
+    Contains a summary of all donations received throughout the year, with the total amount clearly indicated.
+
+## Example Usage    
+
+To generate the report for the year 2022, make sure you have a file named kontobericht2022.csv in the correct format. Then, run the script:
+
+```bash
+python donatori_report.py   
 ```
 
-Du kannst es auch per SSH herunterladen:
+## Error Handling 
+- *AttributeError* or *IndexError*: These are caught and printed with the month name if any issues arise during the monthly processing loop.
 
-```cmd 
-git clone git@github.com:MircetaLuka/monatsbericht-automatisierung.git
-```
-
-
-#### Extrahiere die ZIP-Datei in einen Ordner deiner Wahl
-Wenn du die ZIP-Datei heruntergeladen hast, musst du sie in einem Ordner deiner Wahl entpacken. Die heruntergeladene Datei befindet sich im Ordner "Downloads" auf deinem Computer. Durch einen Doppelklick öffnet sich die ZIP-Datei, und du kannst die Dateien per Drag & Drop z.B. auf deinen Desktop ziehen.
-
-#### Lade [Visual Studio Code](https://code.visualstudio.com) herunter
-Nachdem du das Programm erfolgreich auf deinen Desktop oder in einen anderen Ordner verschoben hast, kannst du die Datei **create_monthly_report.py** in einem Editor deiner Wahl öffnen, z.B. **[VS Code](https://code.visualstudio.com)**. Klicke auf den Link, um die neueste Version herunterzuladen.
-
-#### Wie erstellt man einen Bericht mit diesem Programm?
-Bevor du **create_monthly_report.py** öffnest, musst du die neueste Version der Datei Kontobericht.csv herunterladen, die du von deinem George-Konto bekommst. Füge diese Datei in denselben Ordner ein, in dem sich auch das Programm befindet. Durch einen Doppelklick auf **create_monthly_report.py** öffnet sich der Editor, den du im vorherigen Schritt installiert hast. Nun musst du nur noch auf den Play-Button klicken, und ein neuer .xlsx-Bericht wird erstellt. So sieht das aus:
-![program.png](program.png)
-Im linken Kreis siehst du deinen Ordner, der die **kontobericht.csv** (die Datei, die du von George heruntergeladen hast) und **Kontobericht_2018** (den vom Programm erstellten Bericht) enthält. Es ist wichtig zu erwähnen, dass die Datei, die du von George herunterlädst, **kontoberichte.csv** heißen muss. Wenn sie anders heißt, ändere bitte den Namen entsprechend, da das Programm die Daten sonst nicht finden kann.
-
-Im rechten Kreis siehst du den Play-Button, der das Programm startet.
-
-Programmierer: Luka Mirčeta
-
+- *Empty Data:* If a month has no data, it is skipped from the report without causing an error.
