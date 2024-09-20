@@ -1,5 +1,4 @@
-## SPOJI-Spajalica Programm 
-### Automatisierte Erstellung von Jahresberichten
+## Automatisierte Erstellung von Jahresberichten
 **Mit diesem Programm kann der Finanzverwalter in wenigen Sekunden einen Jahresbericht erstellen.**
 
 ### Wie richtet man das Programm auf dem eigenen Computer ein?
